@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Ganado</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Gestor de Ganado</h1>
+        <form action="{{ url_for('logout') }}" method="POST" style="text-align: right;">
+            <button type="submit">Cerrar Sesión</button>
+        </form>
+    </header>
+
+    <!-- Mensajes Flash -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+
+    <!-- Formulario para agregar ganado -->
+    <section class="form-container">
+        <h2>Agregar Nuevo Ganado</h2>
+        <form method="POST" action="/agregar">
+            <label for="id_etiqueta">ID Etiqueta:</label>
+            <input type="text" id="id_etiqueta" name="id_etiqueta" required>
+            
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+            
+            <label for="raza">Raza:</label>
+            <input type="text" id="raza" name="raza" required>
+            
+            <label for="peso">Peso (kg):</label>
+            <input type="number" id="peso" name="peso" step="0.01" required>
+            
+            <label for="estado_salud">Estado de Salud:</label>
+            <input type="text" id="estado_salud" name="estado_salud" required>
+            
+            <button type="submit">Agregar</button>
+        </form>
+    </section>
+
+
+    <!-- Tabla de ganado -->
+    <section>
+        <h2>Lista de Ganado</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Raza</th>
+                    <th>Peso</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in ganado %}
+                <tr>
+                    <td>{{ g.id_etiqueta }}</td>
+                    <td>{{ g.nombre }}</td>
+                    <td>{{ g.raza }}</td>
+                    <td>{{ g.peso }}</td>
+                    <td>{{ g.estado_salud }}</td>
+                    <td>
+                        
+                            <!-- Formulario para eliminar -->
+                         <form action="{{ url_for('eliminar', id_etiqueta=g.id_etiqueta) }}" method="POST" style="display: inline;">
+                         <button type="submit">Eliminar</button>
+                         </form>
+
+                          <!-- Formulario para actualizar el peso  -->
+                         <form action="{{ url_for('actualizar_peso') }}" method="POST" style="display: inline;">
+                         <input type="hidden" name="id_etiqueta" value="{{ g.id_etiqueta }}">
+                         <input type="number" step="0.01" name="nuevo_peso" placeholder="Nuevo Peso" required>
+                         <button type="submit">Actualizar</button>
+                         </form>
+                          <!-- Formulario para actualizar el estado de salud  -->
+                         <form action="{{ url_for('actualizar_estado_salud') }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="id_etiqueta" value="{{ g.id_etiqueta }}">
+                            <select name="nuevo_estado" required>
+                                <option value="" disabled selected>Selecciona el estado</option>
+                                <option value="Saludable">Saludable</option>
+                                <option value="Enfermo">Enfermo</option>
+                                <option value="En Observación">En Observación</option>
+                            </select>
+                            <button type="submit">Actualizar Estado</button>
+                        </form>
+                        
+
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>
